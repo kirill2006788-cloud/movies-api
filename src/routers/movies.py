@@ -1,26 +1,14 @@
 from typing import Literal
 
-from fastapi import APIRouter, Depends, Query, status
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy import asc, desc, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database import get_session
 from src.models import Movie
-from src.schemas import MovieCreate, MovieRead
+
 
 router = APIRouter(prefix="/movies", tags=["Movies"])
-
-
-@router.post("", response_model=MovieRead, status_code=status.HTTP_201_CREATED)
-async def create_movie(
-    data: MovieCreate,
-    session: AsyncSession = Depends(get_session),
-):
-    movie = Movie(**data.model_dump())
-    session.add(movie)
-    await session.commit()
-    await session.refresh(movie)
-    return movie
 
 
 def build_movies_query(
@@ -44,7 +32,7 @@ def build_movies_query(
     return query.order_by(sort_function(sort_column))
 
 
-@router.get("", response_model=list[MovieRead])
+@router.get("")
 async def get_movies(
     genre: str | None = None,
     year: int | None = Query(None, ge=1888),
@@ -53,7 +41,17 @@ async def get_movies(
     order: Literal["asc", "desc"] = "asc",
     session: AsyncSession = Depends(get_session),
 ):
-    query = build_movies_query(genre, year, min_rating, sort_by, order)
+    result = await session.scalars(
+        build_movies_query(genre, year, min_rating, sort_by, order)
+    )
 
-    result = await session.scalars(query)
-    return result.all()
+    return [
+        {
+            "id": movie.id,
+            "title": movie.title,
+            "genre": movie.genre,
+            "rating": movie.rating,
+            "year": movie.year,
+        }
+        for movie in result.all()
+    ]

@@ -1,6 +1,6 @@
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 
-engine = create_async_engine("sqlite+aiosqlite:///./movies.db", echo=False)
+engine = create_async_engine('sqlite+aiosqlite:///./show.db', echo=True)
 
 AsyncSessionLocal = async_sessionmaker(bind=engine, expire_on_commit=False)
 
