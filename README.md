@@ -37,7 +37,6 @@ moves_api/
 │   ├── models/
 │   │   ├── __init__.py      # базовый класс SQLAlchemy
 │   │   └── movie.py         # модель фильма
-│   ├── repositories/        # работа с базой данных
 │   ├── routers/             # маршруты API
 │   ├── schemas/             # Pydantic-схемы
 │   ├── database.py          # подключение к SQLite
@@ -53,7 +52,7 @@ moves_api/
 ### 1. Клонирование репозитория
 
 ```bash
-git clone <ссылка-на-репозиторий>
+git clone https://github.com/kirill2006788-cloud/movies-api.git
 cd moves_api
 ```
 
